@@ -25,6 +25,7 @@ import (
 )
 
 func init() {
+
 	// Filters is the default set of global filters.
 	revel.Filters = []revel.Filter{
 		revel.PanicFilter,             // Recover from panics and display an error page instead.
@@ -47,7 +48,8 @@ func init() {
 		revel.CompressFilter,          // Compress the result.
 		revel.ActionInvoker,           // Invoke the action.
 	}
-	
+
+	// regist template functions
 	revel.TemplateFuncs["raw"] = func(str string) template.HTML {
 		return template.HTML(str)
 	}
