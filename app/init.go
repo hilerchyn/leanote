@@ -10,8 +10,8 @@ import (
 	"github.com/leanote/leanote/app/controllers/admin"
 	"github.com/leanote/leanote/app/controllers/member"
 	_ "github.com/leanote/leanote/app/lea/binder"
-	"github.com/leanote/leanote/app/lea/session"
-	"github.com/leanote/leanote/app/lea/memcache"
+//	"github.com/leanote/leanote/app/lea/session"
+//	"github.com/leanote/leanote/app/lea/memcache"
 	"github.com/leanote/leanote/app/lea/route"
 	"reflect"
 	"fmt"
@@ -34,11 +34,11 @@ func init() {
 		// AuthFilter,						// Invoke the action.
 		revel.FilterConfiguringFilter, // A hook for adding or removing per-Action filters.
 		revel.ParamsFilter,            // Parse parameters into Controller.Params.
-		// revel.SessionFilter,           // Restore and write the session cookie.
+		revel.SessionFilter,           // Restore and write the session cookie.
 		
 		// 使用SessionFilter标准版从cookie中得到sessionID, 然后通过MssessionFilter从Memcache中得到
 		// session, 之后MSessionFilter将session只存sessionID然后返回给SessionFilter返回到web
-		session.SessionFilter,         // leanote session 
+		// session.SessionFilter,         // leanote session 
 		// session.MSessionFilter,         // leanote memcache session 
 		
 		revel.FlashFilter,             // Restore and write the flash cookie.
@@ -52,6 +52,18 @@ func init() {
 	// regist template functions
 	revel.TemplateFuncs["raw"] = func(str string) template.HTML {
 		return template.HTML(str)
+	}
+	revel.TemplateFuncs["trim"] = func(str string) string {
+		str = strings.Trim(str, " ")
+		str = strings.Trim(str, " ")
+		
+		str = strings.Trim(str, "\n")
+		str = strings.Trim(str, "&nbsp;")
+		
+		// 以下两个空格不一样
+		str = strings.Trim(str, " ")
+		str = strings.Trim(str, " ")
+		return str
 	}
 	revel.TemplateFuncs["add"] = func(i int) string {
 		i = i + 1;
@@ -147,8 +159,33 @@ func init() {
 		return template.HTML(tagStr)
 	}
 	
+	revel.TemplateFuncs["blogTagsForExport"] = func(renderArgs map[string]interface{}, tags []string) template.HTML {
+		if tags == nil || len(tags) == 0 {
+			return ""
+		}
+		tagStr := ""
+		lenTags := len(tags)
+		
+		for i, tag := range tags {
+			str := tag
+			var classes = "label"
+			if InArray([]string{"red", "blue", "yellow", "green"}, tag) {
+				classes += " label-" + tag
+			} else {
+				classes += " label-default"
+			}
+			
+			classes += " label-post"
+			tagStr += "<span class=\"" + classes + "\" >" + str + "</span>";
+			if i != lenTags - 1 {
+				tagStr += " "
+			}
+		}
+		return template.HTML(tagStr)
+	}
+	
 	// lea++
-	revel.TemplateFuncs["blogTagsLea"] = func(renderArgs map[string]interface{}, tags []string, isRecommend bool) template.HTML {
+	revel.TemplateFuncs["blogTagsLea"] = func(renderArgs map[string]interface{}, tags []string, typeStr string) template.HTML {
 		if tags == nil || len(tags) == 0 {
 			return ""
 		}
@@ -157,10 +194,12 @@ func init() {
 		lenTags := len(tags)
 		
 		tagPostUrl := "http://lea.leanote.com/"
-		if isRecommend {
+		if typeStr == "recommend" {
 			tagPostUrl += "?tag=";
-		} else {
+		} else if typeStr == "latest" {
 			tagPostUrl += "latest?tag=";
+		} else {
+			tagPostUrl += "subscription?tag=";
 		}
 		
 		for i, tag := range tags {
@@ -369,7 +408,7 @@ func init() {
 		// email配置
 		InitEmail()
 		InitVd()
-		memcache.InitMemcache() // session服务
+		// memcache.InitMemcache() // session服务
 		// 其它service
 		service.InitService()
 		controllers.InitService()
