@@ -70,9 +70,8 @@ func (c MemberBlog) getSorter(sorterField string, isAsc bool, okSorter []string)
 var userPageSize = 15
 
 func (c MemberBlog) Index(sorter, keywords string) revel.Result {
-	userId := c.GetUserId()
-	userInfo := userService.GetUserInfo(userId)
-	c.RenderArgs["userInfo"] = userInfo
+
+	c.common()
 
 	c.RenderArgs["title"] = "Posts"
 	pageNumber := c.GetPage()
