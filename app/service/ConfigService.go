@@ -20,6 +20,7 @@ type ConfigService struct {
 	adminUserId string
 	siteUrl string
 	adminUsername string
+	cookiePrefix string
 	// 全局的
 	GlobalAllConfigs map[string]interface{}
 	GlobalStringConfigs map[string]string
@@ -34,6 +35,8 @@ func (this *ConfigService) InitGlobalConfigs() bool {
 	this.GlobalArrayConfigs = map[string][]string{}
 	this.GlobalMapConfigs = map[string]map[string]string{}
 	this.GlobalArrMapConfigs = map[string][]map[string]string{}
+
+	this.cookiePrefix = revel.CookiePrefix
 	
 	this.adminUsername, _ = revel.Config.String("adminUsername")
 	if this.adminUsername == "" {
@@ -77,6 +80,9 @@ func (this *ConfigService) GetAdminUsername() string {
 }
 func (this *ConfigService) GetAdminUserId() string {
 	return this.adminUserId
+}
+func (this *ConfigService) GetCookiePrefix() string {
+	return this.cookiePrefix
 }
 
 // 通用方法
