@@ -149,6 +149,10 @@ func (c Blog) setUrl(userBlog info.UserBlog, userInfo info.User) {
 	// life.leanote.com, lealife.com
 	siteUrl := configService.GetSiteUrl()
 	blogUrls := blogService.GetBlogUrls(&userBlog, &userInfo)
+
+	// 前端使用nginx代理，获取的url为 127.0.0.1，使用siteUrl代替
+	staticUrl = siteUrl
+
 	// 分类
 	// 搜索
 	// 查看
