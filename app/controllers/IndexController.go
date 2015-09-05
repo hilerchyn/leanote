@@ -23,8 +23,9 @@ func (c Index) Default() revel.Result {
 func (c Index) Index() revel.Result {
 
 	c.SetUserInfo()
-	c.RenderArgs["title"] = "leanote"
+	c.RenderArgs["title"] = revel.AppName
 	c.RenderArgs["openRegister"] = configService.GlobalStringConfigs["openRegister"]
+	c.RenderArgs["cookiePrefix"] = revel.CookiePrefix
 	lang := c.SetLocale()
 	
 	return c.RenderTemplate("home/index_" + lang + ".html");

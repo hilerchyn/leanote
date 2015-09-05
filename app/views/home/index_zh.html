@@ -129,7 +129,7 @@ $(function() {
 	
 	$('#lang a').click(function() {
 		var lang = $(this).data('lang');
-		setCookie('LEANOTE_LANG', lang);
+		setCookie('{{.cookiePrefix}}_LANG', lang);
 		location.reload();
 	});
 });
